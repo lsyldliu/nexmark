@@ -5,14 +5,7 @@
 -- Illustrates a filter join.
 -- -------------------------------------------------------------------------------------------------
 
--- TODO: streaming join doesn't support rowtime attribute in input, this should be fixed by FLINK-18651.
---  As a workaround, we re-create a new view without rowtime attribute for now.
-DROP VIEW IF EXISTS auction;
-DROP VIEW IF EXISTS bid;
-CREATE VIEW auction AS SELECT auction.* FROM ${NEXMARK_TABLE} WHERE event_type = 1;
-CREATE VIEW bid AS SELECT bid.* FROM ${NEXMARK_TABLE} WHERE event_type = 2;
-
-CREATE TABLE discard_sink (
+CREATE TABLE nexmark_q20 (
     auction  BIGINT,
     bidder  BIGINT,
     price  BIGINT,
@@ -34,7 +27,7 @@ CREATE TABLE discard_sink (
     'connector' = 'blackhole'
 );
 
-INSERT INTO discard_sink
+INSERT INTO nexmark_q20
 SELECT
     auction, bidder, price, channel, url, B.dateTime, B.extra,
     itemName, description, initialBid, reserve, A.dateTime, expires, seller, category, A.extra

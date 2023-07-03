@@ -8,7 +8,7 @@
 -- Emit the count of bids per window.
 -- -------------------------------------------------------------------------------------------------
 
-CREATE TABLE discard_sink (
+CREATE TABLE nexmark_q12 (
   bidder BIGINT,
   bid_count BIGINT,
   starttime TIMESTAMP(3),
@@ -17,11 +17,14 @@ CREATE TABLE discard_sink (
   'connector' = 'blackhole'
 );
 
-INSERT INTO discard_sink
+CREATE VIEW B AS SELECT *, PROCTIME() as p_time FROM bid;
+
+INSERT INTO nexmark_q12
 SELECT
-    B.bidder,
+    bidder,
     count(*) as bid_count,
-    TUMBLE_START(B.p_time, INTERVAL '10' SECOND) as starttime,
-    TUMBLE_END(B.p_time, INTERVAL '10' SECOND) as endtime
-FROM (SELECT *, PROCTIME() as p_time FROM bid) B
-GROUP BY B.bidder, TUMBLE(B.p_time, INTERVAL '10' SECOND);
+    window_start AS starttime,
+    window_end AS endtime
+FROM TABLE(
+        TUMBLE(TABLE B, DESCRIPTOR(p_time), INTERVAL '10' SECOND))
+GROUP BY bidder, window_start, window_end;

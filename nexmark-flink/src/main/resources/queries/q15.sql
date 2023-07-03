@@ -5,7 +5,7 @@
 -- Illustrates multiple distinct aggregations with filters.
 -- -------------------------------------------------------------------------------------------------
 
-CREATE TABLE discard_sink (
+CREATE TABLE nexmark_q15 (
   `day` VARCHAR,
   total_bids BIGINT,
   rank1_bids BIGINT,
@@ -23,20 +23,20 @@ CREATE TABLE discard_sink (
   'connector' = 'blackhole'
 );
 
-INSERT INTO discard_sink
+INSERT INTO nexmark_q15
 SELECT
-     DATE_FORMAT(dateTime, 'yyyy-MM-dd') as `day`,
-     count(*) AS total_bids,
-     count(*) filter (where price < 10000) AS rank1_bids,
-     count(*) filter (where price >= 10000 and price < 1000000) AS rank2_bids,
-     count(*) filter (where price >= 1000000) AS rank3_bids,
-     count(distinct bidder) AS total_bidders,
-     count(distinct bidder) filter (where price < 10000) AS rank1_bidders,
-     count(distinct bidder) filter (where price >= 10000 and price < 1000000) AS rank2_bidders,
-     count(distinct bidder) filter (where price >= 1000000) AS rank3_bidders,
-     count(distinct auction) AS total_auctions,
-     count(distinct auction) filter (where price < 10000) AS rank1_auctions,
-     count(distinct auction) filter (where price >= 10000 and price < 1000000) AS rank2_auctions,
-     count(distinct auction) filter (where price >= 1000000) AS rank3_auctions
+    DATE_FORMAT(dateTime, 'yyyy-MM-dd') as `day`,
+    count(*) AS total_bids,
+    count(*) filter (where price < 10000) AS rank1_bids,
+    count(*) filter (where price >= 10000 and price < 1000000) AS rank2_bids,
+    count(*) filter (where price >= 1000000) AS rank3_bids,
+    count(distinct bidder) AS total_bidders,
+    count(distinct bidder) filter (where price < 10000) AS rank1_bidders,
+    count(distinct bidder) filter (where price >= 10000 and price < 1000000) AS rank2_bidders,
+    count(distinct bidder) filter (where price >= 1000000) AS rank3_bidders,
+    count(distinct auction) AS total_auctions,
+    count(distinct auction) filter (where price < 10000) AS rank1_auctions,
+    count(distinct auction) filter (where price >= 10000 and price < 1000000) AS rank2_auctions,
+    count(distinct auction) filter (where price >= 1000000) AS rank3_auctions
 FROM bid
 GROUP BY DATE_FORMAT(dateTime, 'yyyy-MM-dd');

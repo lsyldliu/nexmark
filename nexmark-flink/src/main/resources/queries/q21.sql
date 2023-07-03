@@ -5,7 +5,7 @@
 -- Illustrates a 'CASE WHEN' + 'REGEXP_EXTRACT' SQL.
 -- -------------------------------------------------------------------------------------------------
 
-CREATE TABLE discard_sink (
+CREATE TABLE nexmark_q21 (
     auction  BIGINT,
     bidder  BIGINT,
     price  BIGINT,
@@ -15,7 +15,7 @@ CREATE TABLE discard_sink (
     'connector' = 'blackhole'
 );
 
-INSERT INTO discard_sink
+INSERT INTO nexmark_q21
 SELECT
     auction, bidder, price, channel,
     CASE
@@ -25,6 +25,6 @@ SELECT
         WHEN lower(channel) = 'baidu' THEN '3'
         ELSE REGEXP_EXTRACT(url, '(&|^)channel_id=([^&]*)', 2)
         END
-    AS channel_id FROM bid
-    where REGEXP_EXTRACT(url, '(&|^)channel_id=([^&]*)', 2) is not null or
-          lower(channel) in ('apple', 'google', 'facebook', 'baidu');
+        AS channel_id FROM bid
+where REGEXP_EXTRACT(url, '(&|^)channel_id=([^&]*)', 2) is not null or
+        lower(channel) in ('apple', 'google', 'facebook', 'baidu');

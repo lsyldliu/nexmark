@@ -7,7 +7,7 @@
 
 CREATE FUNCTION count_char AS 'com.github.nexmark.flink.udf.CountChar';
 
-CREATE TABLE discard_sink (
+CREATE TABLE nexmark_q14 (
     auction BIGINT,
     bidder BIGINT,
     price  DECIMAL(23, 3),
@@ -19,18 +19,18 @@ CREATE TABLE discard_sink (
   'connector' = 'blackhole'
 );
 
-INSERT INTO discard_sink
-SELECT 
+INSERT INTO nexmark_q14
+SELECT
     auction,
     bidder,
     0.908 * price as price,
     CASE
         WHEN HOUR(dateTime) >= 8 AND HOUR(dateTime) <= 18 THEN 'dayTime'
-        WHEN HOUR(dateTime) <= 6 OR HOUR(dateTime) >= 20 THEN 'nightTime'
-        ELSE 'otherTime'
-    END AS bidTimeType,
-    dateTime,
-    extra,
-    count_char(extra, 'c') AS c_counts
-FROM bid
-WHERE 0.908 * price > 1000000 AND 0.908 * price < 50000000;
+            WHEN HOUR(dateTime) <= 6 OR HOUR(dateTime) >= 20 THEN 'nightTime'
+            ELSE 'otherTime'
+END AS bidTimeType,
+        dateTime,
+        extra,
+        count_char(extra, 'c') AS c_counts
+    FROM bid
+    WHERE 0.908 * price > 1000000 AND 0.908 * price < 50000000;
